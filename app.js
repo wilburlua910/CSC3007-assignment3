@@ -48,7 +48,8 @@ let geopath = d3.geoPath().projection(projection);
 
 var legend = d3.legendColor()
     .title("Legends (Amount of people)")
-    .scale(colorScale);
+    .scale(colorScale)
+    .labelFormat(d3.format(".0f"))
 
 var tooltip = d3.select(".tooltip")
 
@@ -91,8 +92,6 @@ svg.append("g")
         .on("mouseout", () => {
             tooltip.style("visibility", "hidden");
 
-        d3.select(event.currentTarget)
-        .attr("class", "distric")
         })
         .on("mousemove", function(e, d) {
             let subzoneName = d.properties["Subzone Name"]

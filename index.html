@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSC3007 - Assignment 03</title>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    
     <style>
 
         .tooltip {
-            background: paleturquoise;
+            background: whitesmoke;
                 border: solid;
                 border-width: 1px;
                 border-radius: 3px;
@@ -20,20 +22,25 @@
         }
     </style>
 
+<script src="https://d3js.org/d3.v7.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/colorbrewer@1.5.2/index.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js" defer></script>
+<script src="./app.js" defer></script>
+
 </head>
 <body>
 
     <h1> Choropleth Population Map of Singapore</h1>
     <div class="tooltip"></div>
-    <div id="my_map">
-        <svg></svg>
-    </div>
+    <section class=".container-lg">
+        <div id="my_map">
+            <svg></svg>
+        </div>
+    </section>
 
-
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/colorbrewer@1.5.2/index.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
-    <script src="./app.js"></script>
-    
+    <!-- JavaScript Bundle with Popper -->
 </body>
+    <footer class="text-center text-lg-start bg-light">
+        <section>Data retrieved from singstat.gov.sg. Cleaned by Chi-Loong</section>
+    </footer>
 </html>
