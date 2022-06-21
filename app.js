@@ -1,7 +1,4 @@
-
 let width = 1000, height = 600;
-
-
 let svg = d3.select("svg")
     .attr("viewBox", "0 0 " + width + " " + height)
 
@@ -11,20 +8,35 @@ var colorScale = d3.scaleLinear()
   .range(d3.schemeBlues[9])
   .interpolate(d3.interpolateLab);
 
-//   var colorScheme = d3.schemeReds[6];
-//   colorScheme.unshift("#eee")
-//   var colorScale = d3.scaleThreshold()
-//       .domain([0, 100, 500, 2000, 5000, 100000])
-//       .range(colorScheme);
-
 let geoData 
 let populationData
+
+function getNum(val) {
+    if(isNaN(val)) {
+        return 0;
+    }
+    return val;
+}
+
 // Load external data
 Promise.all([d3.json("sgmap.json"), d3.csv("population2021.csv")]).then(data => {
 
     geoData = data[0]
     populationData = data[1]
+
+    console.log(populationData)
+    //Get min max from populationData 
+    var pMin = Math.min(...(populationData.map(i => getNum(i.Population))))
+
+    var pMax = Math.max(...(populationData.map(i => getNum(i.Population))))
     
+
+    console.log(pMin)
+    console.log(pMax)
+    
+var colorScale = d3.scaleSequential()
+    .interpolator(d3.interpolateGnBu)
+    .domain([pMin, pMax])
 // Map and projection
 var projection = d3.geoMercator()
     .center([103.851959, 1.290270])
@@ -38,6 +50,8 @@ var legend = d3.legendColor()
     .title("Legends (Amount of people)")
     .scale(colorScale);
 
+var tooltip = d3.select(".tooltip")
+
 svg.append("g")
     .attr("id", "districts")
     .selectAll("path")
@@ -46,7 +60,7 @@ svg.append("g")
     .append("path")
     .attr("d", geopath)
     .attr("stroke", "grey")
-    .attr("stroke-width", 0.5)
+    .attr("stroke-width", 0.8)
     .attr("fill", (d) => {
         let subzoneName = d.properties["Subzone Name"]
 
@@ -55,38 +69,45 @@ svg.append("g")
             s.Subzone.toLowerCase() == subzoneName.toLowerCase())
 
         if (currentZone != null) {
-            
             if(currentZone.Population != "-") {
                 return colorScale(currentZone.Population)
+            } else if (currentZone.Population == "-"){
+                return colorScale(0)
             } else {
                 return colorScale(0)
             }
         }
         
-    }).on("mouseover", (event, d) => {
+    }).on("mouseover", function(e) {
+        tooltip.style("visibility", "visible")
 
-        let subzoneName = d.properties["Subzone Name"]
-
-        console.log(d)
-        let currentZone = populationData.find((s) => 
-            s.Subzone.toLowerCase() == subzoneName.toLowerCase())
-        
-        d3.select(".tooltip")
-        .text(
-            "Area name: " + d.properties.Name + "\n" 
-            + "Population: " + currentZone.Population)
+        d3.select(e.currentTarget)
+        .attr("class", "hover")
         .style("position", "absolute")
-        .style("font-size", '30px')
         .style("background", "#fff")
-        .style("left", (event.pageX) + "px")
-        .style("top", (event.pageY) + "px");
-        
-    })
-    .on("mouseout", (event, d) => {
-        d3.select(".tooltip")
-        .text("");
-    })
-         
+        .style("left", (e.pageX) + "px")
+        .style("top", (e.pageY) + "px");
+    }) 
+        .on("mouseout", () => {
+            tooltip.style("visibility", "hidden");
+
+        d3.select(event.currentTarget)
+        .attr("class", "distric")
+        })
+        .on("mousemove", function(e, d) {
+            let subzoneName = d.properties["Subzone Name"]
+            let currentZone = populationData.find((s) => 
+            s.Subzone.toLowerCase() == subzoneName.toLowerCase())
+
+            tooltip
+            .style("top", (e.pageY + 10) + "px")
+            .style("left", (e.pageX + 10) + "px")
+                .html(
+                    `${d.properties.Name} - 
+                    ${d.properties["Planning Area Name"]} <br> 
+                    <h5> Population: ${currentZone.Population} `
+                )
+        })
 
     svg.append("g")
     .attr("transform", "translate(0, 20)")
